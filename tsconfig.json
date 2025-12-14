@@ -1,27 +1,43 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    // Standard Next.js Settings:
+    "target": "ES2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+
+    // ⚠️ THE CRITICAL FIX FOR 'process' ERROR ⚠️
+    // This tells TypeScript exactly where to look for installed type definitions (like @types/node).
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+
+    // CRITICAL CHANGES FOR DRIZZLE/NODE RESOLUTION:
+    // This fixes the 'Cannot find module 'drizzle-kit'' error.
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    // Explicitly include the Drizzle config file
+    "drizzle.config.ts"
+  ],
+  "exclude": ["node_modules"],
+  "plugins": [
+    {
+      "name": "next"
+    }
+  ]
 }

@@ -1,6 +1,7 @@
 "use client";
 import { z } from "zod";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { OctagonAlertIcon } from "lucide-react";
@@ -62,7 +63,7 @@ export const SignUpView = () => {
         onError: ({ error }) => {
           setError(error.message);
         },
-      }
+      },
     );
   };
   const onSubmit = (data: z.infer<typeof formSchema>) => {
@@ -83,7 +84,7 @@ export const SignUpView = () => {
         onError: ({ error }) => {
           setError(error.message);
         },
-      }
+      },
     );
   };
 
@@ -178,7 +179,7 @@ export const SignUpView = () => {
                 </div>
                 {!!error && (
                   <Alert className="bg-destructive/10 border-none">
-                    <OctagonAlertIcon className="h-4 w-4 !text-destructive" />
+                    <OctagonAlertIcon className="h-4 w-4 text-destructive!" />
                     <AlertTitle className="text-sm">{error}</AlertTitle>
                   </Alert>
                 )}
@@ -230,7 +231,7 @@ export const SignUpView = () => {
             </form>
           </Form>
           <div className=" from-blue-600 to-blue-900 bg-radial relative hidden md:flex flex-col gap-y-4 items-center justify-center">
-            <img src="/logo.svg" alt="Your AI" className="w-[92px] h-[92px]" />
+            <Image src="/logo.svg" alt="Your AI" className="w-23 h-23" />
             <p className="text-2xl font-semibold text-white">Your.AI</p>
           </div>
         </CardContent>

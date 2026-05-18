@@ -65,7 +65,8 @@ export const MeetingForm = ({
   );
   const updateMeeting = useMutation(
     trpc.meetings.update.mutationOptions({
-      onSuccess: async () => {
+      onSuccess: async (data) => {
+        // 🔑 1. Add 'data' here
         await queryClient.invalidateQueries(
           trpc.meetings.getMany.queryOptions({}),
         );
@@ -74,7 +75,7 @@ export const MeetingForm = ({
             trpc.meetings.getOne.queryOptions({ id: initialValues.id }),
           );
         }
-        onSuccess?.(updateMeeting.data?.id);
+        onSuccess?.(data.id); // 🔑 2. Change this to data.id
       },
       onError: (error) => {
         toast.error(error.message);
@@ -88,7 +89,9 @@ export const MeetingForm = ({
       name: initialValues?.name ?? "",
       agentId: initialValues?.agentId ?? "",
       userId: initialValues?.userId ?? "temp-user-id",
-      instructions: initialValues?.instructions ?? "",
+      // 🔑 Change the fallback from "" to a default string:
+      instructions:
+        initialValues?.instructions ?? "Default meeting instructions",
     },
   });
 
@@ -110,7 +113,12 @@ export const MeetingForm = ({
         onOpenChange={setOpenNewAgentDialog}
       />
       <Form {...form}>
-        <form className=" space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          className=" space-y-4"
+          onSubmit={form.handleSubmit(onSubmit, (errors) =>
+            console.log("❌ Zod Errors:", errors),
+          )}
+        >
           <FormField
             name="name"
             control={form.control}

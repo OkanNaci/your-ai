@@ -95,7 +95,7 @@ export const SignUpView = ({ socialProviders }: {
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 md:p-8">
+            <form method="post" onSubmit={form.handleSubmit(onSubmit)} className="p-6 md:p-8">
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col items-center text-center">
                   <h1 className="text-2xl font-bold">Let&apos;s get started</h1>
@@ -215,7 +215,7 @@ export const SignUpView = ({ socialProviders }: {
             </form>
           </Form>
           <div className=" from-blue-600 to-blue-900 bg-radial relative hidden md:flex flex-col gap-y-4 items-center justify-center">
-            <Image src="/logo.svg" alt="Your AI" className="w-23 h-23" />
+            <Image src="/logo.svg" alt="Your AI" width={92} height={92} />
             <p className="text-2xl font-semibold text-white">Your.AI</p>
           </div>
         </CardContent>

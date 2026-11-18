@@ -1,6 +1,7 @@
 "use client";
 import { z } from "zod";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { OctagonAlertIcon } from "lucide-react";
@@ -26,7 +27,9 @@ const formSchema = z.object({
   password: z.string().min(1, { message: "Password is required" }),
 });
 
-export const SignInView = () => {
+export const SignInView = ({ socialProviders }: {
+  socialProviders: { google: boolean; github: boolean };
+}) => {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -137,38 +140,20 @@ export const SignInView = () => {
                 <Button disabled={pending} type="submit" className="w-full">
                   Sign in
                 </Button>
-                <div
-                  className="after:border-border relative text-center text-sm after:absolute
-                after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t"
-                >
-                  <span className="bg-card px-2 text-muted-foreground relative z-10">
-                    Or continue with
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <Button
-                    onClick={() => {
-                      onSocial("google");
-                    }}
-                    disabled={pending}
-                    variant="outline"
-                    type="button"
-                    className="w-full"
-                  >
-                    <FaGoogle />
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      onSocial("github");
-                    }}
-                    disabled={pending}
-                    variant="outline"
-                    type="button"
-                    className="w-full"
-                  >
-                    <FaGithub />
-                  </Button>
-                </div>
+                {(socialProviders.google || socialProviders.github) && (
+                  <div className="flex gap-3">
+                    {socialProviders.google && (
+                      <Button onClick={() => onSocial("google")} disabled={pending} variant="outline" type="button" className="flex-1">
+                        <FaGoogle /> Google
+                      </Button>
+                    )}
+                    {socialProviders.github && (
+                      <Button onClick={() => onSocial("github")} disabled={pending} variant="outline" type="button" className="flex-1">
+                        <FaGithub /> GitHub
+                      </Button>
+                    )}
+                  </div>
+                )}
                 <div className="text-center text-sm">
                   Don&apos;t have an account?{" "}
                   <Link
@@ -182,15 +167,12 @@ export const SignInView = () => {
             </form>
           </Form>
           <div className=" from-blue-600 to-blue-900 bg-radial relative hidden md:flex flex-col gap-y-4 items-center justify-center">
-            <img src="/logo.svg" alt="Your AI" className="w-[92px] h-[92px]" />
+            <Image width={92} height={92} src="/logo.svg" alt="Your AI" className="w-[92px] h-[92px]" />
             <p className="text-2xl font-semibold text-white">Your.AI</p>
           </div>
         </CardContent>
       </Card>
-      <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="@">Privacy Policy</a>
-      </div>
+
     </div>
   );
 };

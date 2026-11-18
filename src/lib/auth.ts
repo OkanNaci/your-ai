@@ -1,25 +1,25 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "@/db"; // your drizzle instance
-import * as schema from "@/db/schema"; // your drizzle schema
+import { db } from "@/db";
+import * as schema from "@/db/schema";
+
+const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } =
+  process.env;
+
+export const enabledSocialProviders = {
+  github: Boolean(GITHUB_CLIENT_ID && GITHUB_CLIENT_SECRET),
+  google: Boolean(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET),
+};
+
 export const auth = betterAuth({
   socialProviders: {
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID as string,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-    },
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    },
+    ...(GITHUB_CLIENT_ID && GITHUB_CLIENT_SECRET && {
+      github: { clientId: GITHUB_CLIENT_ID, clientSecret: GITHUB_CLIENT_SECRET },
+    }),
+    ...(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET && {
+      google: { clientId: GOOGLE_CLIENT_ID, clientSecret: GOOGLE_CLIENT_SECRET },
+    }),
   },
-  emailAndPassword: {
-    enabled: true,
-  },
-  database: drizzleAdapter(db, {
-    provider: "pg", // or "mysql", "sqlite"
-    schema: {
-      ...schema,
-    },
-  }),
+  emailAndPassword: { enabled: true },
+  database: drizzleAdapter(db, { provider: "pg", schema }),
 });

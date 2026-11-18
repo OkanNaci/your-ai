@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
+import { auth, enabledSocialProviders } from "@/lib/auth";
 import { SignUpView } from "@/modules/auth/ui/views/sign-up-view";
 const Page = async () => {
   const session = await auth.api.getSession({
@@ -9,6 +9,6 @@ const Page = async () => {
   if (!!session) {
     redirect("/");
   }
-  return <SignUpView />;
+  return <SignUpView socialProviders={enabledSocialProviders} />;
 };
 export default Page;

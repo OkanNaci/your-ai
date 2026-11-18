@@ -87,7 +87,7 @@ export const AgentIdView = ({ agentId }: Props) => {
           <p className="text-lg font-medium">Instructions</p>
           <p className="text-neutral-800 font-medium">{data.instructions}</p>
         </div>
-        <AgentPlayground agentId={agentId} enabled={data.playgroundEnabled} />
+        {data.playgroundEnabled && <AgentPlayground agentId={agentId} enabled />}
       </div>
     </>
   );

@@ -141,17 +141,22 @@ export const SignInView = ({ socialProviders }: {
                   Sign in
                 </Button>
                 {(socialProviders.google || socialProviders.github) && (
-                  <div className="flex gap-3">
-                    {socialProviders.google && (
-                      <Button onClick={() => onSocial("google")} disabled={pending} variant="outline" type="button" className="flex-1">
-                        <FaGoogle /> Google
-                      </Button>
-                    )}
-                    {socialProviders.github && (
-                      <Button onClick={() => onSocial("github")} disabled={pending} variant="outline" type="button" className="flex-1">
-                        <FaGithub /> GitHub
-                      </Button>
-                    )}
+                  <div className="grid gap-4">
+                    <div className="after:border-border relative text-center text-sm after:inset-0 after:absolute after:top-1/2 after:flex after:items-center after:border-t">
+                      <span className="bg-card px-2 text-muted-foreground relative z-10">Or continue with</span>
+                    </div>
+                    <div className="grid grid-flow-col auto-cols-fr gap-4">
+                      {socialProviders.google && (
+                        <Button onClick={() => onSocial("google")} disabled={pending} variant="outline" type="button" aria-label="Continue with Google">
+                          <FaGoogle />
+                        </Button>
+                      )}
+                      {socialProviders.github && (
+                        <Button onClick={() => onSocial("github")} disabled={pending} variant="outline" type="button" aria-label="Continue with GitHub">
+                          <FaGithub />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 )}
                 <div className="text-center text-sm">

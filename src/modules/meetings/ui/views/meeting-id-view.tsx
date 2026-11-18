@@ -92,10 +92,10 @@ export const MeetingIdView = ({ meetingId }: Props) => {
           <UpcomingState
             onStart={() => transition.mutate({ id: meetingId, action: "start" })}
             onCancelMeeting={() => transition.mutate({ id: meetingId, action: "cancel" })}
-            pending={transition.isPending}
+            isCancelling={transition.isPending}
           />
         )}
-        <section className="rounded-lg border bg-card p-5">
+        <section className="rounded-lg border bg-white px-4 py-5">
           <h2 className="text-lg font-semibold">Agenda</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Agent: <Link className="underline" href={`/agents/${data.agent.id}`}>{data.agent.name}</Link>
@@ -103,7 +103,7 @@ export const MeetingIdView = ({ meetingId }: Props) => {
           <p className="mt-2 whitespace-pre-wrap">{data.instructions || "No agenda added."}</p>
         </section>
         {isCompleted && (
-          <section className="rounded-lg border bg-card p-5">
+          <section className="rounded-lg border bg-white px-4 py-5">
             <h2 className="text-lg font-semibold">Meeting completed</h2>
             <h3 className="mt-3 font-medium">Meeting notes</h3>
             <p className="mt-1 whitespace-pre-wrap text-muted-foreground">{data.summary || "No notes were saved."}</p>
@@ -111,7 +111,7 @@ export const MeetingIdView = ({ meetingId }: Props) => {
         )}
         {isProcessing && <ProcessingState />}
         {isActive && (
-          <section className="space-y-4 rounded-lg border bg-card p-5">
+          <section className="space-y-4 rounded-lg border bg-white px-4 py-5">
             <h2 className="text-lg font-semibold">Meeting in progress</h2>
             <form className="space-y-3" onSubmit={(event) => {
               event.preventDefault();

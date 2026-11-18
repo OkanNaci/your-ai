@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Try the Your AI meeting workspace with sample data.">
+  <title>Your AI · Interactive demo</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-content">
+      <a class="brand" href="./" aria-label="Your AI demo"><span class="brand-mark" aria-hidden="true">✦</span> Your AI</a>
+      <a class="repo-link" href="https://github.com/OkanNaci/your-ai">View source <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+  <main class="container">
+    <section class="hero" aria-labelledby="page-title">
+      <h1 id="page-title">From agenda to next steps.</h1>
+      <p>Create a specialist agent, set up a meeting, and keep a record of what you decided.</p>
+      <p class="demo-note">Interactive demo · no account required. Data stays in this browser.</p>
+    </section>
+    <div class="workspace">
+      <section class="panel" aria-labelledby="agents-title">
+        <div class="panel-heading"><h2 id="agents-title">Agents</h2></div>
+        <div id="agents" class="records"></div>
+        <details id="agent-editor">
+          <summary>Create an agent</summary>
+          <form id="agent-form">
+            <label for="agent-name">Name</label>
+            <input id="agent-name" name="name" required maxlength="80" placeholder="e.g. Interview Coach">
+            <label for="agent-instructions">Instructions</label>
+            <textarea id="agent-instructions" name="instructions" required maxlength="1200" rows="3" placeholder="Describe the agent’s role."></textarea>
+            <button type="submit">Save agent</button>
+          </form>
+        </details>
+      </section>
+      <section class="panel" aria-labelledby="meetings-title">
+        <div class="panel-heading"><h2 id="meetings-title">Meetings</h2></div>
+        <div id="meetings" class="records"></div>
+        <details id="meeting-editor">
+          <summary>Create a meeting</summary>
+          <form id="meeting-form">
+            <label for="meeting-name">Title</label>
+            <input id="meeting-name" name="name" required maxlength="100" placeholder="e.g. Technical interview prep">
+            <label for="meeting-agent">Agent</label>
+            <select id="meeting-agent" name="agent" required></select>
+            <label for="meeting-agenda">Agenda</label>
+            <textarea id="meeting-agenda" name="agenda" required maxlength="1500" rows="3" placeholder="What would you like to cover?"></textarea>
+            <button type="submit">Save meeting</button>
+          </form>
+        </details>
+      </section>
+    </div>
+    <p id="status" role="status" class="sr-only"></p>
+    <footer>
+      <p>This demo covers the meeting workflow. See the repository for sign-in, AI replies, video, and database setup.</p>
+      <button class="quiet" id="reset" type="button">Reset demo</button>
+    </footer>
+  </main>
+</body>
+</html>

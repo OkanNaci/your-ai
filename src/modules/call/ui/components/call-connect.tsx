@@ -40,7 +40,7 @@ export const CallConnect = ({
         name: userName,
         image: userImage,
       },
-      tokenProvider: generateToken,
+      tokenProvider: () => generateToken({ id: meetingId }),
     });
     setClient(_client);
 
@@ -48,7 +48,7 @@ export const CallConnect = ({
       _client.disconnectUser();
       setClient(undefined);
     };
-  }, [userId, userName, userImage, generateToken]);
+  }, [userId, userName, userImage, generateToken, meetingId]);
 
   const [call, setCall] = useState<Call>();
   useEffect(() => {
@@ -61,9 +61,7 @@ export const CallConnect = ({
 
     return () => {
       if (_call.state.callingState !== CallingState.LEFT) {
-        _call.leave();
-        _call.endCall();
-        setCall(undefined);
+        void _call.leave().catch(() => {});
       }
     };
   }, [client, meetingId]);
@@ -79,7 +77,7 @@ export const CallConnect = ({
   return (
     <StreamVideo client={client}>
       <StreamCall call={call}>
-        <CallUi meetingName={meetingName} />
+        <CallUi meetingId={meetingId} meetingName={meetingName} />
       </StreamCall>
     </StreamVideo>
   );

@@ -1,6 +1,6 @@
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { db } from "@/db";
-import { agents } from "@/db/schema";
+import { agents, meetings } from "@/db/schema";
 import { agentInsertSchema } from "@/modules/agents/schemas";
 import { z } from "zod";
 import { eq, getTableColumns, sql, and, ilike, desc, count } from "drizzle-orm";
@@ -12,7 +12,20 @@ import {
 } from "@/constants";
 import { TRPCError } from "@trpc/server";
 import { agentsUpdateSchema } from "../schemas";
+import { askAgent } from "./ask-agent";
+const meetingCount = sql<number>`(select count(*) from ${meetings} as owned_meeting
+  where owned_meeting.agent_id = ${agents.id} and owned_meeting.user_id = ${agents.userId})`
+  .mapWith(Number);
+
 export const agentsRouter = createTRPCRouter({
+  ask: protectedProcedure
+    .input(z.object({ id: z.string(), question: z.string().trim().min(1).max(2000) }))
+    .mutation(async ({ input, ctx }) => {
+      const [agent] = await db.select({ instructions: agents.instructions }).from(agents)
+        .where(and(eq(agents.id, input.id), eq(agents.userId, ctx.auth.user.id)));
+      if (!agent) throw new TRPCError({ code: "NOT_FOUND", message: "Agent not found." });
+      return askAgent(agent.instructions, input.question);
+    }),
   update: protectedProcedure
     .input(agentsUpdateSchema)
     .mutation(async ({ input, ctx }) => {
@@ -53,7 +66,7 @@ export const agentsRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const [existingAgent] = await db
         .select({
-          meetingCount: sql<number>`1`,
+          meetingCount,
           ...getTableColumns(agents),
         })
         .from(agents)
@@ -67,12 +80,12 @@ export const agentsRouter = createTRPCRouter({
         });
       }
 
-      return existingAgent;
+      return { ...existingAgent, playgroundEnabled: Boolean(process.env.OPENAI_API_KEY) };
     }),
   getMany: protectedProcedure
     .input(
       z.object({
-        page: z.number().default(DEFAULT_PAGE),
+        page: z.number().int().min(1).default(DEFAULT_PAGE),
         pageSize: z
           .number()
           .min(MIN_PAGE_SIZE)
@@ -86,7 +99,7 @@ export const agentsRouter = createTRPCRouter({
       const data = await db
 
         .select({
-          meetingCount: sql<number>`6`,
+          meetingCount,
           ...getTableColumns(agents),
         })
         .from(agents)

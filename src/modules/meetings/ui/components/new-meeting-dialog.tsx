@@ -13,7 +13,7 @@ export const NewMeetingDialog = ({
   return (
     <ResponsiveDialog
       title="New Meeting"
-      description="Create a new meeting to schedule with your team."
+      description="Choose an agent and write an agenda for your meeting."
       open={open}
       onOpenChange={onOpenChange}
     >

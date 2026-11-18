@@ -20,12 +20,12 @@ import {
 } from "@/components/ui/drawer";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { GeneratedAvatar } from "@/components/generated-avatar";
-import { CreditCardIcon, LogOutIcon } from "lucide-react";
+import { LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 export const DashboardUserButton = () => {
   const { data, isPending } = authClient.useSession();
   const router = useRouter();
-  const isMobile = useIsMobile(); // Replace with actual mobile detection logic
+  const isMobile = useIsMobile();
   const onLogout = () => {
     authClient.signOut({
       fetchOptions: {
@@ -90,10 +90,7 @@ export const DashboardUserButton = () => {
           </div>
 
           <DrawerFooter className="gap-2 pt-4">
-            <button className="flex w-full items-center justify-between rounded-md p-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground border border-border/50">
-              Billing
-              <CreditCardIcon className="size-4" />
-            </button>
+
 
             <button
               onClick={onLogout}
@@ -137,10 +134,7 @@ export const DashboardUserButton = () => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer items-center justify-between">
-          Billing
-          <CreditCardIcon className="size-4" />
-        </DropdownMenuItem>
+
         <DropdownMenuItem
           onClick={onLogout}
           className="cursor-pointer items-center justify-between"

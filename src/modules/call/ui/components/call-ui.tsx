@@ -1,59 +1,41 @@
 import { useState } from "react";
 import { StreamTheme, useCall } from "@stream-io/video-react-sdk";
-
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { CallLobby } from "./call-lobby";
 import { CallActive } from "./call-active";
-import { CallEnded } from "./call-ended";
 
 interface Props {
+  meetingId: string;
   meetingName: string;
 }
 
-export const CallUi = ({ meetingName }: Props) => {
+export const CallUi = ({ meetingId, meetingName }: Props) => {
   const call = useCall();
-
-  const [show, setShow] = useState<"lobby" | "call" | "ended">("lobby");
+  const router = useRouter();
+  const [joined, setJoined] = useState(false);
   const [joining, setJoining] = useState(false);
 
-  const handleJoin = async () => {
+  async function join() {
     if (!call || joining) return;
-
+    setJoining(true);
     try {
-      setJoining(true);
-
-      console.log("callingState:", call.state.callingState);
-
-      if (call.state.callingState !== "idle") {
-        return;
-      }
-
-      await call.join({ create: true });
-
-      setShow("call");
-    } catch (error) {
-      console.error("JOIN ERROR:", error);
+      await call.join();
+      setJoined(true);
+    } catch {
+      toast.error("Could not join the video room. Please try again.");
     } finally {
       setJoining(false);
     }
-  };
-
-  const handleLeave = async () => {
-    if (!call) return;
-
-    await call.leave();
-
-    setShow("ended");
-  };
+  }
 
   return (
     <StreamTheme className="h-full">
-      {show === "lobby" && <CallLobby onJoin={handleJoin} />}
-
-      {show === "call" && (
-        <CallActive onLeave={handleLeave} meetingName={meetingName} />
+      {joined ? (
+        <CallActive meetingName={meetingName} onLeave={() => router.push(`/meetings/${meetingId}`)} />
+      ) : (
+        <CallLobby onJoin={join} joining={joining} />
       )}
-
-      {show === "ended" && <CallEnded />}
     </StreamTheme>
   );
 };

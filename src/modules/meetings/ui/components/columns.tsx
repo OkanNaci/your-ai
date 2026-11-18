@@ -50,9 +50,9 @@ export const columns: ColumnDef<MeetingGetMany[number]>[] = [
         <div className="flex flex-col gap-y-1">
           <span className="font-semibold capitalize">{row.original.name}</span>
           <div className="flex items-center gap-x-2">
-            <div className="w-1 h-1 rounded-full bg-muted-foreground">
+            <div className="flex min-w-0 items-center gap-1">
               <CornerDownRightIcon className="size-3 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground max-w-50px truncate capitalize ">
+              <span className="text-sm text-muted-foreground max-w-40 truncate capitalize ">
                 {row.original.agent.name}
               </span>
             </div>
@@ -106,7 +106,7 @@ export const columns: ColumnDef<MeetingGetMany[number]>[] = [
         >
           <ClockFadingIcon className="text-blue-700" />
 
-          {row.original.duration
+          {row.original.duration !== null
             ? formatDuration(row.original.duration)
             : "No duration"}
         </Badge>

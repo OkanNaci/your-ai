@@ -1,5 +1,5 @@
 "use client";
-import { BotIcon, StarIcon, VideoIcon } from "lucide-react";
+import { BotIcon, HouseIcon, VideoIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 const firstSection = [
+  { icon: HouseIcon, label: "Home", href: "/" },
   {
     icon: VideoIcon,
     label: "Meetings",
@@ -30,13 +31,7 @@ const firstSection = [
   },
 ];
 
-const secondSection = [
-  {
-    icon: StarIcon,
-    label: "Upgrade",
-    href: "/upgrade",
-  },
-];
+
 
 export const DashboardSidebar = () => {
   const pathname = usePathname();
@@ -78,35 +73,7 @@ export const DashboardSidebar = () => {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <div className="px-4 py-2">
-          <Separator className="opacity-10 text-[#5D6B68]" />
-        </div>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {secondSection.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    asChild
-                    className={cn(
-                      "h-10 hover:bg-linear-to-r/oklch hover:border-[#5D6B68]/10 from-sidebar-accent from-%5 via-30% via-sidebar/50 to-sidebar/50",
-                      pathname === item.href &&
-                        "bg-linear-to-r/oklch border-[#5D6B68]/10 "
-                    )}
-                    isActive={pathname === item.href}
-                  >
-                    <Link href={item.href}>
-                      <item.icon className="size-5" />
-                      <span className="text-sm font-medium tracking-tight">
-                        {item.label}
-                      </span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+
       </SidebarContent>
       <SidebarFooter className="text-white">
         <DashboardUserButton />

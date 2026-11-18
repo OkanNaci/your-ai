@@ -16,6 +16,7 @@ import { LogInIcon } from "lucide-react";
 
 interface Props {
   onJoin: () => void;
+  joining: boolean;
 }
 
 const DisabledVideoPreviev = () => {
@@ -47,7 +48,7 @@ const AllowBrowserPermissions = () => {
   );
 };
 
-export const CallLobby = ({ onJoin }: Props) => {
+export const CallLobby = ({ onJoin, joining }: Props) => {
   const { useCameraState, useMicrophoneState } = useCallStateHooks();
   const { hasBrowserPermission: hasMicPermission } = useMicrophoneState();
   const { hasBrowserPermission: hasCameraPermission } = useCameraState();
@@ -76,7 +77,7 @@ export const CallLobby = ({ onJoin }: Props) => {
             <Button asChild variant="ghost">
               <Link href="/meetings">Cancel</Link>
             </Button>
-            <Button onClick={onJoin}>
+            <Button onClick={onJoin} disabled={joining}>
               <LogInIcon />
               Join Call
             </Button>

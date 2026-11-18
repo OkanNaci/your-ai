@@ -6,6 +6,7 @@ import { LoadingState } from "@/components/loading-state";
 import { ErrorState } from "@/components/error-state";
 import { AgentIdViewHeader } from "@/modules/agents/ui/views/components/agent-id-view-header";
 import { GeneratedAvatar } from "@/components/generated-avatar";
+import { AgentPlayground } from "./components/agent-playground";
 import { Badge } from "@/components/ui/badge";
 import { VideoIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -86,6 +87,7 @@ export const AgentIdView = ({ agentId }: Props) => {
           <p className="text-lg font-medium">Instructions</p>
           <p className="text-neutral-800 font-medium">{data.instructions}</p>
         </div>
+        <AgentPlayground agentId={agentId} enabled={data.playgroundEnabled} />
       </div>
     </>
   );

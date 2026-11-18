@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { MeetingGetOne } from "../../types";
 import { meetingsInsertSchema } from "@/app/(dashboard)/meetings/schemas";
+import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { NewAgentDialog } from "@/modules/agents/ui/views/components/new-agent-dialog";
@@ -66,7 +67,7 @@ export const MeetingForm = ({
   const updateMeeting = useMutation(
     trpc.meetings.update.mutationOptions({
       onSuccess: async (data) => {
-        // 🔑 1. Add 'data' here
+
         await queryClient.invalidateQueries(
           trpc.meetings.getMany.queryOptions({}),
         );
@@ -75,7 +76,7 @@ export const MeetingForm = ({
             trpc.meetings.getOne.queryOptions({ id: initialValues.id }),
           );
         }
-        onSuccess?.(data.id); // 🔑 2. Change this to data.id
+        onSuccess?.(data.id);
       },
       onError: (error) => {
         toast.error(error.message);
@@ -88,10 +89,7 @@ export const MeetingForm = ({
     defaultValues: {
       name: initialValues?.name ?? "",
       agentId: initialValues?.agentId ?? "",
-      userId: initialValues?.userId ?? "temp-user-id",
-      // 🔑 Change the fallback from "" to a default string:
-      instructions:
-        initialValues?.instructions ?? "Default meeting instructions",
+      instructions: initialValues?.instructions ?? "",
     },
   });
 
@@ -115,9 +113,7 @@ export const MeetingForm = ({
       <Form {...form}>
         <form
           className=" space-y-4"
-          onSubmit={form.handleSubmit(onSubmit, (errors) =>
-            console.log("❌ Zod Errors:", errors),
-          )}
+          onSubmit={form.handleSubmit(onSubmit)}
         >
           <FormField
             name="name"
@@ -176,6 +172,19 @@ export const MeetingForm = ({
             )}
           />
 
+          <FormField
+            name="instructions"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Agenda</FormLabel>
+                <FormControl>
+                  <Textarea {...field} placeholder="What would you like to cover?" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="flex justify-between gap-x-2">
             {onCancel && (
               <Button

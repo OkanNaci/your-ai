@@ -13,12 +13,12 @@ export const CallView = ({ meetingId }: Props) => {
   const { data } = useSuspenseQuery(
     trpc.meetings.getOne.queryOptions({ id: meetingId }),
   );
-  if (data.status === "completed") {
+  if (data.status !== "active" || !data.videoEnabled) {
     return (
       <div className="flex h-screen items-center justify-center">
         <ErrorState
-          title="Meeting has ended"
-          description="You can no longer join this meeting"
+          title="Video room unavailable"
+          description="Video requires an active meeting and a configured Stream account."
         />
       </div>
     );

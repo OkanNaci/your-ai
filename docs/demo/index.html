@@ -4,60 +4,91 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Try the Your AI meeting workspace with sample data.">
-  <title>Your AI · Interactive demo</title>
-  <link rel="stylesheet" href="./style.css">
-  <script src="./app.js" defer></script>
+  <meta name="theme-color" content="#20213a">
+  <title>Your AI · Meeting workspace</title>
+  <link rel="stylesheet" href="./style.css?v=2">
+  <script src="./app.js?v=2" defer></script>
 </head>
 <body>
-  <header class="topbar">
-    <div class="container topbar-content">
-      <a class="brand" href="./" aria-label="Your AI demo"><span class="brand-mark" aria-hidden="true">✦</span> Your AI</a>
-      <a class="repo-link" href="https://github.com/OkanNaci/your-ai">View source <span aria-hidden="true">↗</span></a>
+  <a href="#workspace" class="skip-link">Skip to workspace</a>
+  <aside class="sidebar">
+    <a class="brand" href="./" aria-label="Your AI home"><span class="mark" aria-hidden="true">✦</span> Your AI</a>
+    <nav aria-label="Workspace">
+      <a href="#workspace" aria-current="page"><span aria-hidden="true">◫</span> Overview</a>
+      <a href="#meetings-title"><span aria-hidden="true">◷</span> Meetings</a>
+      <a href="#agents-title"><span aria-hidden="true">◇</span> Agents</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="https://github.com/OkanNaci/your-ai">View on GitHub <span aria-hidden="true">↗</span></a>
+      <button id="reset" type="button">Reset demo</button>
     </div>
-  </header>
-  <main class="container">
-    <section class="hero" aria-labelledby="page-title">
-      <h1 id="page-title">From agenda to next steps.</h1>
-      <p>Create a specialist agent, set up a meeting, and keep a record of what you decided.</p>
-      <p class="demo-note">Interactive demo · no account required. Data stays in this browser.</p>
-    </section>
-    <div class="workspace">
-      <section class="panel" aria-labelledby="agents-title">
-        <div class="panel-heading"><h2 id="agents-title">Agents</h2></div>
-        <div id="agents" class="records"></div>
-        <details id="agent-editor">
-          <summary>Create an agent</summary>
-          <form id="agent-form">
-            <label for="agent-name">Name</label>
-            <input id="agent-name" name="name" required maxlength="80" placeholder="e.g. Interview Coach">
-            <label for="agent-instructions">Instructions</label>
-            <textarea id="agent-instructions" name="instructions" required maxlength="1200" rows="3" placeholder="Describe the agent’s role."></textarea>
-            <button type="submit">Save agent</button>
-          </form>
-        </details>
+  </aside>
+  <main id="workspace">
+    <header class="topline">
+      <span>Workspace <span class="slash" aria-hidden="true">/</span> Overview</span>
+      <span class="demo-label"><span aria-hidden="true"></span> Interactive demo</span>
+    </header>
+    <div class="content">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <h1 id="page-title">Meeting workspace</h1>
+          <p>Choose a specialist, set an agenda, and leave with clear next steps.</p>
+          <a class="primary hero-button" href="#meeting-editor" id="hero-create">+ New meeting</a>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="art-card art-card-back"></div>
+          <div class="art-card art-card-front">
+            <i></i><b></b><span></span><span></span><span></span>
+          </div>
+          <div class="art-check">✓</div>
+        </div>
       </section>
-      <section class="panel" aria-labelledby="meetings-title">
-        <div class="panel-heading"><h2 id="meetings-title">Meetings</h2></div>
-        <div id="meetings" class="records"></div>
-        <details id="meeting-editor">
-          <summary>Create a meeting</summary>
-          <form id="meeting-form">
-            <label for="meeting-name">Title</label>
-            <input id="meeting-name" name="name" required maxlength="100" placeholder="e.g. Technical interview prep">
-            <label for="meeting-agent">Agent</label>
-            <select id="meeting-agent" name="agent" required></select>
-            <label for="meeting-agenda">Agenda</label>
-            <textarea id="meeting-agenda" name="agenda" required maxlength="1500" rows="3" placeholder="What would you like to cover?"></textarea>
-            <button type="submit">Save meeting</button>
-          </form>
-        </details>
-      </section>
+      <dl class="stats" aria-label="Workspace activity">
+        <div><dt>Upcoming</dt><dd id="upcoming-count">0</dd><span class="stat-icon upcoming" aria-hidden="true">◷</span></div>
+        <div><dt>In progress</dt><dd id="active-count">0</dd><span class="stat-icon active" aria-hidden="true">◉</span></div>
+        <div><dt>Completed</dt><dd id="completed-count">0</dd><span class="stat-icon completed" aria-hidden="true">✓</span></div>
+      </dl>
+      <div class="workspace">
+        <section class="panel" aria-labelledby="meetings-title">
+          <div class="panel-heading">
+            <div><h2 id="meetings-title">Meetings</h2><p>Plan a session or pick up where you left off.</p></div>
+            <span id="meeting-count" class="count"></span>
+          </div>
+          <details id="meeting-editor" class="editor">
+            <summary>Create a meeting</summary>
+            <form id="meeting-form">
+              <label for="meeting-name">Title</label>
+              <input id="meeting-name" name="name" required maxlength="100" placeholder="e.g. Technical interview prep">
+              <label for="meeting-agent">Agent</label>
+              <select id="meeting-agent" name="agent" required></select>
+              <label for="meeting-agenda">Agenda</label>
+              <textarea id="meeting-agenda" name="agenda" required maxlength="1500" rows="3" placeholder="What would you like to cover?"></textarea>
+              <button class="primary" type="submit">Save meeting</button>
+            </form>
+          </details>
+          <div id="meetings" class="records"></div>
+        </section>
+        <section class="panel" aria-labelledby="agents-title">
+          <div class="panel-heading">
+            <div><h2 id="agents-title">Agents</h2><p>Specialists with a role you define.</p></div>
+            <span id="agent-count" class="count"></span>
+          </div>
+          <details id="agent-editor" class="editor">
+            <summary>Create an agent</summary>
+            <form id="agent-form">
+              <label for="agent-name">Name</label>
+              <input id="agent-name" name="name" required maxlength="80" placeholder="e.g. Interview Coach">
+              <label for="agent-instructions">Instructions</label>
+              <textarea id="agent-instructions" name="instructions" required maxlength="1200" rows="3" placeholder="Describe the agent’s role."></textarea>
+              <button class="primary" type="submit">Save agent</button>
+            </form>
+          </details>
+          <div id="agents" class="records"></div>
+        </section>
+      </div>
+      <p class="demo-note">No account required. Your changes stay in this browser. <a href="https://github.com/OkanNaci/your-ai#run-locally">Full app setup ↗</a></p>
+      <p id="status" role="status" class="sr-only"></p>
     </div>
-    <p id="status" role="status" class="sr-only"></p>
-    <footer>
-      <p>This demo covers the meeting workflow. See the repository for sign-in, AI replies, video, and database setup.</p>
-      <button class="quiet" id="reset" type="button">Reset demo</button>
-    </footer>
   </main>
 </body>
 </html>

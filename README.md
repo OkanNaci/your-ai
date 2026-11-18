@@ -4,7 +4,7 @@ Your AI is a meeting workspace for creating a specialist assistant, preparing an
 
 [Try the live demo](https://okannaci.github.io/your-ai/) to create an agent, run a meeting, and save notes without signing in. This sample workspace stores changes in your browser. Use the local setup below to try accounts, database storage, and optional AI or video integrations.
 
-![Completed interview prep meeting with its agenda and saved notes](docs/demo-meeting.png)
+![Your AI live demo dashboard showing meeting status and agents](docs/demo-overview.png)
 
 ## What you can do
 

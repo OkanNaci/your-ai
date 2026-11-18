@@ -34,6 +34,12 @@ const agentSelect = document.querySelector("#meeting-agent");
 const status = document.querySelector("#status");
 let state = load();
 const noteDrafts = new Map();
+const statusLabels = {
+  upcoming: "Upcoming",
+  active: "In progress",
+  completed: "Completed",
+  cancelled: "Cancelled",
+};
 
 function element(tag, text, className) {
   const node = document.createElement(tag);
@@ -70,7 +76,7 @@ function addNotesForm(card, meeting) {
   notes.placeholder = "Record a decision or next step.";
   const label = element("label", "Meeting notes");
   label.htmlFor = notes.id;
-  const finish = element("button", "Finish meeting");
+  const finish = element("button", "Finish meeting", "primary");
   finish.type = "submit";
   form.append(label, notes, finish);
   form.addEventListener("submit", (event) => {
@@ -94,27 +100,43 @@ function meetingCard(meeting) {
   const title = element("h3", meeting.name);
   title.id = "meeting-" + meeting.id;
   title.tabIndex = -1;
-  heading.append(title, element("span", meeting.status, "tag"));
+  const label = statusLabels[meeting.status] ?? "Unknown";
+  heading.append(title, element("span", label, "tag " + meeting.status));
   const agent = state.agents.find(({ id }) => id === meeting.agentId);
   card.append(heading, element("p", "Agent: " + (agent?.name ?? "Unavailable")), element("p", meeting.agenda));
 
   if (meeting.status === "upcoming") {
     const actions = element("div", "", "actions");
     actions.append(
-      button("Start meeting", () => changeStatus(meeting, "active")),
+      button("Start meeting", () => changeStatus(meeting, "active"), "primary"),
       button("Cancel meeting", () => changeStatus(meeting, "cancelled"), "quiet"),
     );
     card.append(actions);
   }
   if (meeting.status === "active") addNotesForm(card, meeting);
-  if (meeting.status === "completed") card.append(element("p", meeting.notes || "No meeting notes."));
+  if (meeting.status === "completed") {
+    const notes = element("section", "", "notes");
+    notes.append(element("h4", "Meeting notes"), element("p", meeting.notes || "No meeting notes."));
+    card.append(notes);
+  }
   return card;
 }
 
 function render() {
+  for (const key of ["upcoming", "active", "completed"]) {
+    const count = state.meetings.filter((meeting) => meeting.status === key).length;
+    document.getElementById(key + "-count").textContent = count;
+  }
+  document.getElementById("meeting-count").textContent = state.meetings.length;
+  document.getElementById("agent-count").textContent = state.agents.length;
   agents.replaceChildren(...state.agents.map((agent) => {
     const card = element("article", "", "record");
-    card.append(element("h3", agent.name), element("p", agent.instructions));
+    const initials = agent.name.trim().split(/\s+/).slice(0, 2).map((word) => Array.from(word)[0]).join("").toUpperCase();
+    const heading = element("div", "", "agent-label");
+    const avatar = element("span", initials, "avatar");
+    avatar.setAttribute("aria-hidden", "true");
+    heading.append(avatar, element("h3", agent.name));
+    card.append(heading, element("p", agent.instructions));
     return card;
   }));
   meetings.replaceChildren(...state.meetings.map(meetingCard));
@@ -167,6 +189,23 @@ document.querySelector("#meeting-form").addEventListener("submit", (event) => {
   save("Meeting saved.");
   document.getElementById("meeting-" + id).focus();
 });
+
+document.querySelector("#hero-create").addEventListener("click", (event) => {
+  event.preventDefault();
+  document.querySelector("#meeting-editor").open = true;
+  document.querySelector("#meeting-name").focus();
+});
+
+const sections = document.querySelectorAll(".sidebar nav a");
+function updateNavigation() {
+  const target = location.hash || "#workspace";
+  for (const link of sections) {
+    if (link.hash === target) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  }
+}
+window.addEventListener("hashchange", updateNavigation);
+updateNavigation();
 
 document.querySelector("#reset").addEventListener("click", () => {
   if (!window.confirm("Reset this browser’s demo data?")) return;

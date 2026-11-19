@@ -2,7 +2,7 @@
 
 Your AI is a meeting workspace for creating a specialist assistant, preparing an agenda, and keeping a record of decisions. The core demo runs locally without a cloud database or API keys.
 
-[Try the live demo](https://okannaci.github.io/your-ai/) to create an agent, run a meeting, and save notes without signing in. This sample workspace stores changes in your browser. Use the local setup below to try accounts, database storage, and optional AI or video integrations.
+[Open the hosted app](https://your-ai-okannaci.vercel.app/) to sign up and use the original Your AI workspace. See below for local setup and optional AI or video integrations.
 
 ![Completed interview prep meeting with its agenda and saved notes](docs/demo-meeting.png)
 

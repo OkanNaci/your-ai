@@ -40,7 +40,7 @@ export function AgentPlayground({ agentId, enabled }: { agentId: string; enabled
         </>
       ) : (
         <p className="text-sm text-muted-foreground">
-          Text replies are unavailable until the workspace administrator connects OpenAI.
+          Text replies are unavailable until the workspace administrator connects a model.
         </p>
       )}
     </section>

@@ -12,7 +12,7 @@ import {
 } from "@/constants";
 import { TRPCError } from "@trpc/server";
 import { agentsUpdateSchema } from "../schemas";
-import { askAgent } from "./ask-agent";
+import { askAgent, hasAgentTextProvider } from "./ask-agent";
 const meetingCount = sql<number>`(select count(*) from ${meetings} as owned_meeting
   where owned_meeting.agent_id = ${agents.id} and owned_meeting.user_id = ${agents.userId})`
   .mapWith(Number);
@@ -80,7 +80,7 @@ export const agentsRouter = createTRPCRouter({
         });
       }
 
-      return { ...existingAgent, playgroundEnabled: Boolean(process.env.OPENAI_API_KEY?.trim()) };
+      return { ...existingAgent, playgroundEnabled: hasAgentTextProvider() };
     }),
   getMany: protectedProcedure
     .input(

@@ -10,6 +10,10 @@ import { chromium } from "playwright-core";
 const root = fileURLToPath(new URL("../", import.meta.url));
 assert.ok(!process.env.DATABASE_URL, "Unset DATABASE_URL before running the local smoke test.");
 assert.ok(!process.env.BETTER_AUTH_URL, "Unset BETTER_AUTH_URL before running the local smoke test.");
+assert.ok(
+  !process.env.YOUR_AI_SMOKE_MODEL_PORT || process.env.YOUR_AI_TEST_TEXT_FIXTURE !== "1",
+  "Select the fixture or the real model, not both.",
+);
 const artifacts = path.join(root, ".next", "smoke-artifacts");
 mkdirSync(artifacts, { recursive: true });
 const scratch = mkdtempSync(path.join(artifacts, "app-"));
@@ -21,7 +25,7 @@ try {
     cpSync(path.join(root, entry), path.join(scratch, entry), { recursive: true });
   }
   process.chdir(scratch);
-  for (const key of ["OPENAI_API_KEY", "NEXT_PUBLIC_STREAM_VIDEO_API_KEY", "STREAM_VIDEO_SECRET_KEY",
+  for (const key of ["AGENT_TEXT_PROVIDER", "CLOUDFLARE_WORKERS_AI_TOKEN", "NEXT_PUBLIC_STREAM_VIDEO_API_KEY", "STREAM_VIDEO_SECRET_KEY",
     "GITHUB_CLIENT_SECRET", "GOOGLE_CLIENT_SECRET"]) delete process.env[key];
   process.env.BETTER_AUTH_SECRET = randomBytes(32).toString("hex");
   process.env.NEXT_TELEMETRY_DISABLED = "1";
@@ -54,33 +58,41 @@ try {
     await page.getByRole("row", { name: new RegExp(name) }).click();
   }
 
-  await openNewAgent("Interview Coach", "Coach junior developers.");
-  if (process.env.YOUR_AI_TEST_OPENAI === "1") {
+  const fixture = process.env.YOUR_AI_TEST_TEXT_FIXTURE === "1";
+  const liveModel = Boolean(process.env.YOUR_AI_SMOKE_MODEL_PORT);
+  const first = liveModel ? "Always reply with exactly the word ALPHA." : "Coach junior developers.";
+  const edited = liveModel ? "Always reply with exactly the word BRAVO." : "Coach senior developers.";
+  const second = liveModel ? "Always reply with exactly the word CHARLIE." : "Facilitate planning meetings.";
+  await openNewAgent("Interview Coach", first);
+  if (fixture || liveModel) {
     const playground = page.locator("section").filter({ has: page.getByRole("heading", { name: "Agent playground" }) });
     async function ask(question) {
       await playground.getByLabel("Ask a question").fill(question);
       await playground.getByRole("button", { name: "Ask agent" }).click();
     }
-    async function expectInstructions(instructions) {
-      await ask("How should I prepare?");
-      await playground.getByText("Fixture received: " + instructions, { exact: true }).waitFor();
+    async function expectInstructions(instructions, marker) {
+      await ask(liveModel ? "What is the word? Reply with only that word." : "How should I prepare?");
+      const expected = fixture ? "Fixture received: " + instructions : new RegExp(marker, "i");
+      await playground.getByRole("status").getByText(expected, { exact: fixture }).waitFor();
     }
-    await expectInstructions("Coach junior developers.");
-    await ask("Test rate limit");
-    await playground.getByRole("alert").filter({ hasText: "usage limit" }).waitFor();
-    await expectInstructions("Coach junior developers.");
+    await expectInstructions(first, "ALPHA");
+    if (fixture) {
+      await ask("Test rate limit");
+      await playground.getByRole("alert").filter({ hasText: "usage limit" }).waitFor();
+      await expectInstructions(first, "ALPHA");
+    }
     await page.getByRole("button", { name: "Agent actions" }).click();
     await page.getByRole("menuitem", { name: "Edit" }).click();
-    await page.getByLabel("Instructions").fill("Coach senior developers.");
+    await page.getByLabel("Instructions").fill(edited);
     await page.getByRole("button", { name: "Update", exact: true }).click();
-    await page.getByText("Coach senior developers.", { exact: true }).waitFor();
-    await expectInstructions("Coach senior developers.");
+    await page.getByText(edited, { exact: true }).waitFor();
+    await expectInstructions(edited, "BRAVO");
     await page.getByRole("link", { name: "My Agents" }).click();
-    await openNewAgent("Meeting Facilitator", "Facilitate planning meetings.");
-    await expectInstructions("Facilitate planning meetings.");
-    console.log("Saved agent instructions, edits and provider rate-limit recovery passed.");
+    await openNewAgent("Meeting Facilitator", second);
+    await expectInstructions(second, "CHARLIE");
+    console.log(fixture ? "Text provider fixture passed." : "Real local model answered for both saved agents and the edited instructions.");
   } else {
-    await page.getByText("Text replies are unavailable until the workspace administrator connects OpenAI.").waitFor();
+    await page.getByText("Text replies are unavailable until the workspace administrator connects a model.").waitFor();
   }
   await page.getByRole("link", { name: "Meetings", exact: true }).click();
   await page.getByRole("button", { name: "New Meeting" }).click();

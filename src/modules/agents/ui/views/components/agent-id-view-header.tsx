@@ -57,7 +57,7 @@ export const AgentIdViewHeader = ({
       </Breadcrumb>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost">
+          <Button variant="ghost" aria-label="Agent actions">
             <MoreVerticalIcon />
           </Button>
         </DropdownMenuTrigger>

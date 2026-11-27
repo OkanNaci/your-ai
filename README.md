@@ -12,7 +12,7 @@ Your AI is a meeting workspace for creating a specialist assistant, preparing an
 - Create, edit, and search agents with your own role instructions.
 - Assign an agent to a meeting, set an agenda, and start, cancel, or finish the meeting.
 - Save meeting notes and find past meetings by name, status, or agent.
-- Add an OpenAI API key to ask an agent a text question in its playground.
+- Connect a local model or a Cloudflare Workers Free account to ask a saved agent a text question.
 - Add Stream credentials to open a video room from an active meeting.
 
 ## Run locally
@@ -36,7 +36,7 @@ Open [http://localhost:3000](http://localhost:3000) and choose **Sign up**. Setu
 3. Choose **Start meeting**, write a decision or next step under **Meeting notes**, then choose **Finish meeting**.
 4. Reload the page to show that the notes were saved. Return to **Meetings** and filter by **Completed**.
 
-If OpenAI is configured, open **Interview Coach** and ask “How would you explain async/await in an interview?” to show how the saved instructions shape the answer.
+If a text model is configured, open **Interview Coach** and ask “How would you explain async/await in an interview?” to show how the saved instructions shape the answer.
 
 ## Optional services
 
@@ -44,7 +44,8 @@ Set the relevant variables in `.env.local` using [`.env.example`](.env.example) 
 
 | Service | Variables | What it enables |
 | --- | --- | --- |
-| OpenAI | `OPENAI_API_KEY`, optional `OPENAI_MODEL` (defaults to `gpt-5-mini`) | Text replies in the agent playground. Each question is independent. |
+| Local model | `AGENT_TEXT_PROVIDER=local`, `LOCAL_AI_PORT`, `LOCAL_AI_MODEL` | Text replies from a loopback Chat Completions server. |
+| Cloudflare Workers AI | `AGENT_TEXT_PROVIDER=cloudflare`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_WORKERS_AI_TOKEN` | Hosted text replies using Workers Free. Requests use the account's daily allowance. |
 | Stream Video | `NEXT_PUBLIC_STREAM_VIDEO_API_KEY`, `STREAM_VIDEO_SECRET_KEY` | Camera and microphone preview and an owner-only video room for active meetings. |
 | Neon | `DATABASE_URL` | Hosted PostgreSQL as an alternative to the embedded database. Apply the schema with `npm run db:push` against a development database. |
 | Google or GitHub | The matching `*_CLIENT_ID` and `*_CLIENT_SECRET` | Optional social sign-in. Register `<BETTER_AUTH_URL>/api/auth/callback/google` or `/api/auth/callback/github` with the provider. |
@@ -65,3 +66,7 @@ npm run build
 ```
 
 To exercise the core meeting workflow in Chromium, run `npx playwright-core install chromium` and `npm run test:smoke` after installing dependencies. Alternatively, set `CHROMIUM_PATH` to an installed Chromium or Chrome executable. Run with `DATABASE_URL` and `BETTER_AUTH_URL` unset. The test creates a temporary local application and PGlite database, then saves desktop and mobile screenshots under `.next/smoke-artifacts/`.
+
+For a local model, run `ollama pull qwen2.5:0.5b`, then use the local settings from the environment example. A llama.cpp server on loopback with the matching port and model alias also works. Each playground question is independent. For hosted text, keep the Cloudflare account on [Workers Free](https://developers.cloudflare.com/workers-ai/platform/pricing/). The application uses the Cloudflare REST endpoint with a server-side token and displays a retry message at the quota limit.
+
+Set `YOUR_AI_TEST_TEXT_FIXTURE=1` when running the smoke test to exercise the saved agent instructions, edits, and retry behavior with a loopback fixture. For a real local inference check, leave the fixture unset and set `YOUR_AI_SMOKE_MODEL_PORT` to the running model server's port, with `LOCAL_AI_MODEL` set to its model alias if needed.

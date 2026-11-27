@@ -30,15 +30,17 @@ export function AgentPlayground({ agentId, enabled }: { agentId: string; enabled
             </Button>
           </form>
           {reply.error && <p role="alert" className="text-destructive">{reply.error.message}</p>}
-          {reply.data && (
-            <div aria-live="polite" className="rounded-md border bg-muted p-4 whitespace-pre-wrap break-words">
-              {reply.data.answer}
-            </div>
-          )}
+          <div role="status">
+            {reply.data && (
+              <p className="rounded-md border bg-muted p-4 whitespace-pre-wrap break-words">
+                {reply.data.answer}
+              </p>
+            )}
+          </div>
         </>
       ) : (
         <p className="text-sm text-muted-foreground">
-          Configure an OpenAI API key to try text replies using this agent’s instructions.
+          Text replies are unavailable until the workspace administrator connects OpenAI.
         </p>
       )}
     </section>

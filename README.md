@@ -65,3 +65,5 @@ npm run build
 ```
 
 To exercise the core meeting workflow in Chromium, run `npx playwright-core install chromium` and `npm run test:smoke` after installing dependencies. Alternatively, set `CHROMIUM_PATH` to an installed Chromium or Chrome executable. Run with `DATABASE_URL` and `BETTER_AUTH_URL` unset. The test creates a temporary local application and PGlite database, then saves desktop and mobile screenshots under `.next/smoke-artifacts/`.
+
+Set `YOUR_AI_TEST_OPENAI=1` when running the smoke test to exercise the saved agent instructions, edits, and retry behavior with a local OpenAI fixture. The deployed integration requires a server-side `OPENAI_API_KEY`.

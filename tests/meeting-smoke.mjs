@@ -46,11 +46,42 @@ try {
   }
   await page.getByRole("button", { name: "Sign Up", exact: true }).click();
   await page.getByRole("link", { name: "Agents", exact: true }).click();
-  await page.getByRole("button", { name: "New Agent" }).click();
-  await page.getByLabel("Name", { exact: true }).fill("Interview Coach");
-  await page.getByLabel("Instructions").fill("Coach junior developers.");
-  await page.getByRole("button", { name: "Create", exact: true }).click();
-  await page.getByRole("row", { name: /Interview Coach/ }).waitFor();
+  async function openNewAgent(name, instructions) {
+    await page.getByRole("button", { name: "New Agent" }).click();
+    await page.getByLabel("Name", { exact: true }).fill(name);
+    await page.getByLabel("Instructions").fill(instructions);
+    await page.getByRole("button", { name: "Create", exact: true }).click();
+    await page.getByRole("row", { name: new RegExp(name) }).click();
+  }
+
+  await openNewAgent("Interview Coach", "Coach junior developers.");
+  if (process.env.YOUR_AI_TEST_OPENAI === "1") {
+    const playground = page.locator("section").filter({ has: page.getByRole("heading", { name: "Agent playground" }) });
+    async function ask(question) {
+      await playground.getByLabel("Ask a question").fill(question);
+      await playground.getByRole("button", { name: "Ask agent" }).click();
+    }
+    async function expectInstructions(instructions) {
+      await ask("How should I prepare?");
+      await playground.getByText("Fixture received: " + instructions, { exact: true }).waitFor();
+    }
+    await expectInstructions("Coach junior developers.");
+    await ask("Test rate limit");
+    await playground.getByRole("alert").filter({ hasText: "usage limit" }).waitFor();
+    await expectInstructions("Coach junior developers.");
+    await page.getByRole("button", { name: "Agent actions" }).click();
+    await page.getByRole("menuitem", { name: "Edit" }).click();
+    await page.getByLabel("Instructions").fill("Coach senior developers.");
+    await page.getByRole("button", { name: "Update", exact: true }).click();
+    await page.getByText("Coach senior developers.", { exact: true }).waitFor();
+    await expectInstructions("Coach senior developers.");
+    await page.getByRole("link", { name: "My Agents" }).click();
+    await openNewAgent("Meeting Facilitator", "Facilitate planning meetings.");
+    await expectInstructions("Facilitate planning meetings.");
+    console.log("Saved agent instructions, edits and provider rate-limit recovery passed.");
+  } else {
+    await page.getByText("Text replies are unavailable until the workspace administrator connects OpenAI.").waitFor();
+  }
   await page.getByRole("link", { name: "Meetings", exact: true }).click();
   await page.getByRole("button", { name: "New Meeting" }).click();
   const dialog = page.getByRole("dialog");

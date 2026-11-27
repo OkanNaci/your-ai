@@ -15,8 +15,8 @@ const outputSchema = z.object({
 
 export async function askAgent(instructions: string, question: string) {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new TRPCError({ code: "PRECONDITION_FAILED", message: "The agent playground requires an OpenAI API key." });
+  if (!apiKey?.trim()) {
+    throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Text replies are unavailable because OpenAI is not configured." });
   }
 
   try {
@@ -36,6 +36,9 @@ export async function askAgent(instructions: string, question: string) {
       }),
       signal: AbortSignal.timeout(30_000),
     });
+    if (response.status === 429) {
+      throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "The AI service is busy or has reached its usage limit. Try again later." });
+    }
     if (!response.ok) throw new Error("OpenAI request failed");
 
     const result = outputSchema.parse(await response.json());
@@ -48,7 +51,11 @@ export async function askAgent(instructions: string, question: string) {
       .trim();
     if (!answer) throw new Error("OpenAI returned no text");
     return { answer };
-  } catch {
-    throw new TRPCError({ code: "BAD_GATEWAY", message: "The AI service could not answer. Check the server configuration and try again." });
+  } catch (error) {
+    if (error instanceof TRPCError) throw error;
+    if (error instanceof Error && error.name === "TimeoutError") {
+      throw new TRPCError({ code: "TIMEOUT", message: "The agent took too long to answer. Try again." });
+    }
+    throw new TRPCError({ code: "BAD_GATEWAY", message: "The AI service could not answer. Try again later." });
   }
 }

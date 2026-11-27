@@ -80,7 +80,7 @@ export const agentsRouter = createTRPCRouter({
         });
       }
 
-      return { ...existingAgent, playgroundEnabled: Boolean(process.env.OPENAI_API_KEY) };
+      return { ...existingAgent, playgroundEnabled: Boolean(process.env.OPENAI_API_KEY?.trim()) };
     }),
   getMany: protectedProcedure
     .input(
